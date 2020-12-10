@@ -74,7 +74,7 @@ public class BisectionMain {
     //everything with an "i" at the end indicates the value/s for the next (succeeding) iteration 
     //0=iteration,1=xl,2=xu,3=xmi(NEW),4=xm(OLD),5=fxl,6=fxu,7=fxmi,8=e (iterData index references)
     public static void runBisectionAlgo(Vector<Double> coefficients, ArrayList<Double> stopCrit, double[] iterData) {
-        boolean lowerAsymp=false;
+        boolean lowerAsymp=false,exactRoot=false;
         double approxRoot,xli,xui;
         approxRoot=xli=xui=0;
         
@@ -95,13 +95,16 @@ public class BisectionMain {
             xli=iterData[3];    //xl=xmi (NEW xm)
             xui=iterData[2];    //xu=xu
             lowerAsymp=true;
-        } else approxRoot=iterData[3];    //f(xl)f(xmi) = 0
+        } else {
+            approxRoot=iterData[3];    //f(xl)f(xmi) = 0
+            exactRoot = true;
+        }
 
         iterData[0]++;  //increase iteration counter
 
         //stopping criterion:
         // iteration <= stopping Iteration && error <= stopping Error% && f(xmi) <= stopping f(xm)
-        if(!(iterData[0]>stopCrit.get(0)) && !(iterData[8]<=stopCrit.get(1)) && !(Math.abs(iterData[7])<=stopCrit.get(2))){
+        if(approxRoot!=iterData[3] && !(iterData[0]>stopCrit.get(0)) && !(iterData[8]<=stopCrit.get(1)) && !(Math.abs(iterData[7])<=stopCrit.get(2))){
             //update iteration row (Row #i)
             double[] iterDatai = {iterData[0],xli,xui,iterData[3],iterData[4],iterData[5],iterData[6],iterData[7],iterData[8]};
             
@@ -109,17 +112,21 @@ public class BisectionMain {
         } else {
             System.out.println("\nA stopping criteria has been met--stopped iterating.");
             DecimalFormat df = new DecimalFormat("0.00");
-            if(lowerAsymp) {
-                if(xli > 0) df.setRoundingMode(RoundingMode.CEILING);
-                else df.setRoundingMode(RoundingMode.FLOOR);
-                approxRoot = Double.parseDouble(df.format(xli));  //lowerAsymp
+            if(!exactRoot){
+                if(lowerAsymp) {
+                    if(xli > 0) df.setRoundingMode(RoundingMode.CEILING);
+                    else df.setRoundingMode(RoundingMode.FLOOR);
+                    approxRoot = Double.parseDouble(df.format(xli));  //lowerAsymp
+                }
+                else {
+                    if(xui > 0) df.setRoundingMode(RoundingMode.FLOOR);
+                    else df.setRoundingMode(RoundingMode.CEILING);
+                    approxRoot = Double.parseDouble(df.format(xui));  //upperAsymp
+                }
+                System.out.println("\nThe equation's root is approximately " + approxRoot);
+            } else { 
+                System.out.println("\nThe equation's root is " + approxRoot);
             }
-            else {
-                if(xui > 0) df.setRoundingMode(RoundingMode.FLOOR);
-                else df.setRoundingMode(RoundingMode.CEILING);
-                approxRoot = Double.parseDouble(df.format(xui));  //upperAsymp
-            }
-            System.out.println("\nThe equation's root is approximately " + approxRoot);
         }  
         return;
     }

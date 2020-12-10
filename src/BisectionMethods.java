@@ -50,19 +50,25 @@ public class BisectionMethods implements BisectionInterface{
     @Override
     public double getXm(double xl, double xu) {
         double xm = (xl+xu)/2.0;
-        DecimalFormat df = new DecimalFormat("0.00000");
-        if(xm > 0) df.setRoundingMode(RoundingMode.FLOOR);
-        else df.setRoundingMode(RoundingMode.CEILING);
-        double truncatedXm = Double.parseDouble(df.format(xm));
+        double truncatedXm = 0;
+        if(xm != 0){
+            DecimalFormat df = new DecimalFormat("0.00000");
+            if(xm > 0) df.setRoundingMode(RoundingMode.FLOOR);
+            else df.setRoundingMode(RoundingMode.CEILING);
+            truncatedXm = Double.parseDouble(df.format(xm));
+        }
         return truncatedXm;
     }
     
     @Override
     public double getE(double xmi, double xm) {
         double e = Math.abs(((xmi - xm)/xmi) * 100);
-        DecimalFormat df = new DecimalFormat("0.00000");
-        df.setRoundingMode(RoundingMode.FLOOR);
-        double truncatedE = Double.parseDouble(df.format(e));
+        double truncatedE = 0;
+        if(e != 0) {
+            DecimalFormat df = new DecimalFormat("0.00000");
+            df.setRoundingMode(RoundingMode.FLOOR);
+            truncatedE = Double.parseDouble(df.format(e));
+        }
         return truncatedE;
     }
     
